@@ -144,8 +144,16 @@ int get_message() {
       Serial.print("] : ");
       Serial.println((char*)buf);
       Blink(LED, 40, 3); //blink LED 3 times, 40ms between blinks
+      
 
       memcpy( &s_msg,   &buf, sizeof(s_msg));
+      Serial.print("buff = "); Serial.println(int(buf[sizeof(s_msg)-2]));
+      Serial.print("buff = "); Serial.println(s_msg.mode);
+      for(int i = 0; i < sizeof(s_msg); i++)
+      {
+        Serial.print(int(buf[i])); Serial.print(" ");
+      }
+      Serial.println();
       
       //s_msg.mode += 1;
 

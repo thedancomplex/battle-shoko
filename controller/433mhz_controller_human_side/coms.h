@@ -138,11 +138,17 @@ void send_message() {
   delay(1000);  // Wait 1 second between transmits, could also 'sleep' here!
 
   char radiopacket[20] = "Hello World #";
-  itoa(packetnum++, radiopacket+13, 10);
-  Serial.print("Sending "); Serial.println(radiopacket);
+  char s_buff[sizeof(s_msg)];
+  //itoa(packetnum++, radiopacket+13, 10);
+  
+
+  memcpy(&s_buff, &s_msg, sizeof(s_msg));
+  s_msg.mode+=1;
+  Serial.print("Sending "); Serial.println(int(s_buff[sizeof(s_msg)-2]));
+  Serial.print("sizeof(s_msg) = "); Serial.println(sizeof(s_msg));
   
   // Send a message to the DESTINATION!
-  if (rf69_manager.sendtoWait((uint8_t *)radiopacket, strlen(radiopacket), DEST_ADDRESS)) {
+  if (rf69_manager.sendtoWait((uint8_t *)s_buff, strlen(s_buff), DEST_ADDRESS)) {
     // Now wait for a reply from the server
     uint8_t len = sizeof(buf);
     uint8_t from;   
