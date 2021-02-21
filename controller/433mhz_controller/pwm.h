@@ -1,4 +1,6 @@
 
+#define PWM_H 1
+
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 

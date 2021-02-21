@@ -1,5 +1,19 @@
-#include "coms.h"
-#include "pwm.h"
+#if !defined(COMS_H)
+  #include "coms.h"
+#endif
+
+#if !defined(MESSAGE_H)
+  #include "message.h"
+#endif
+
+#if !defined(PWM_H)
+  #include "pwm.h"
+#endif
+
+#if !defined(SAFETY_H)
+  #include "safety.h"
+#endif
+
 
 void setup() 
 {
@@ -9,21 +23,18 @@ void setup()
   pwm_setup();
 }
 
+
+
+
 void loop() {
   if( get_message() == 0)
   {
-    int v = s_msg.mode % 3;
-    if ( v == 1)
-    {
-      Serial.println("Set PWM - CW"); set_mot(MOT_LEFT, 0.35); set_mot(MOT_RIGHT, -0.35);
-    }
-    else if (v == 2)
-    {
-      Serial.println("Set PWM - CCW"); set_mot(MOT_LEFT, -0.35); set_mot(MOT_RIGHT, 0.35);
-    }
-    else
-    {
-      Serial.println("Set PWM - Stop"); set_mot(MOT_LEFT, 0.0); set_mot(MOT_RIGHT, 0.0);
-    }
+    /* Received Mesage */
+    safety_message_received();
+    set_mot(MOT_LEFT,  get_mot_val(MOT_LEFT));
+    set_mot(MOT_RIGHT, get_mot_val(MOT_RIGHT));
   }
+
+  /* Safety Timer */
+  safety_timer();
 }

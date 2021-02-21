@@ -6,8 +6,15 @@
 // It is designed to work with the other example rf69_server.
 // Demonstrates the use of AES encryption, setting the frequency and modem 
 // configuration
+#define COMS_H 1
 
-#include "message.h"
+#if !defined(PWM_H)
+  #include "pwm.h"
+#endif
+
+#if !defined(MESSAGE_H)
+  #include "message.h"
+#endif
 
 #include <SPI.h>
 #include <RH_RF69.h>
@@ -129,6 +136,15 @@ uint8_t data[] = "And hello back to you";
 uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
 
 
+
+float get_mot_val(int m)
+{
+  if(m == MOT_RIGHT) return s_msg.m_right;
+  if(m == MOT_LEFT)  return s_msg.m_left;
+  return 0.0;
+}
+
+
 int get_message() {
   if (rf69_manager.available())
   {
@@ -168,6 +184,3 @@ int get_message() {
   }
   return 1;
 }
-
-
-

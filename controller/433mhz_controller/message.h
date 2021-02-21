@@ -1,4 +1,4 @@
-
+#define MESSAGE_H 1
 typedef struct s_message {
   float m_left; ///< Moment in X (Mx)
   float m_right; ///< Moment in Y (My)
