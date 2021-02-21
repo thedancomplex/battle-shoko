@@ -8,7 +8,9 @@
 // Demonstrates the use of AES encryption, setting the frequency and modem 
 // configuration
 
-#include "coms.h"
+#if !defined(COMS_H)
+  #include "coms.h"
+#endif
 
 void setup() 
 {
@@ -19,7 +21,13 @@ void setup()
 }
 
 void loop() {
-  send_message();
+  Serial.println("CCW");
+  send_message(0.3, -0.3);
+  delay(2000);
+  Serial.println("CW");
+  send_message(-0.3, 0.3);
+  delay(2000);
+  Serial.println("Stop");
+  send_message(0.0, 0.0);
+  delay(2000);
 }
-
-

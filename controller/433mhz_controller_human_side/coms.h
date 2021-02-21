@@ -8,9 +8,27 @@
 // configuration
 
 
+#define COMS_H 1
+
+int set_message_mode(int m);
+
+int set_message(float d0, float d1);
+int set_message(int m, float d0, float d1);
+
+int set_message_motor(int m, float v);
+
+int send_message();
+int send_message(float d0, float d1);
+int send_message(int m, float d0, float d1);
+
+
 void Blink(byte PIN, byte DELAY_MS, byte loops);
 
-#include "message.h"
+#if !defined(MESSAGE_H)
+  #include "message.h"
+#endif
+
+
 #include <SPI.h>
 #include <RH_RF69.h>
 #include <RHReliableDatagram.h>
@@ -239,11 +257,112 @@ void send_message_test(){
   }
 }
 
-void send_message() {
-  delay(1000);  // Wait 1 second between transmits, could also 'sleep' here!
-  //send_working_string2();
-  send_message_test();
- 
+
+int set_message_mode(int m)
+{
+  if(m == MODE_DIFFERENTIAL_DRIVE){ s_msg.mode = m; return 0; }
+  if(m == MODE_JOYSTICK)          { s_msg.mode = m; return 0; }
+  return 1;
+}
+
+
+int set_message(float d0, float d1)
+{
+  /* 
+   * d0 = MOT_RIGHT or JOY_X
+   * d1 = MOT_LEFT  or JOY_X
+   */
+  if(set_message_motor(MOT_RIGHT, d0)) return 1;
+  if(set_message_motor(MOT_LEFT , d1)) return 1;
+  return 0;
+}
+
+
+int set_message(int m, float d0, float d1)
+{
+  /* m  = mode
+   * d0 = MOT_RIGHT or JOY_X
+   * d1 = MOT_LEFT  or JOY_X
+   */
+  if(set_message_mode(m))               return 1;
+  if(set_message_motor(MOT_RIGHT, d0)) return 1;
+  if(set_message_motor(MOT_LEFT , d1)) return 1;
+  return 0;
+}
+
+
+int set_message_motor(int m, float v)
+{
+  
+  if (m == MOT_LEFT)  {s_msg.d0 = v; return 0;}
+  if (m == MOT_RIGHT) {s_msg.d1 = v; return 0;}
+
+  return 1;
+}
+
+
+int send_message(float d0, float d1)
+{
+   /* d0 = MOT_RIGHT or JOY_X
+   * d1 = MOT_LEFT  or JOY_X
+   */
+  if(set_message_motor( MOT_RIGHT,  d0)) return 1;
+  if(set_message_motor( MOT_LEFT,   d1)) return 1;
+  return send_message();
+}
+
+
+
+int send_message(int m, float d0, float d1)
+{
+    /* m  = mode
+   * d0 = MOT_RIGHT or JOY_X
+   * d1 = MOT_LEFT  or JOY_X
+   */
+  if(set_message( m, d0, d1)) return 1;
+  return send_message();
+}
+
+
+int send_message() {
+  
+  char radiopacket[20] = "Hello World #";
+  char s_buff[sizeof(s_msg)];
+
+  memcpy(&s_buff, &s_msg, sizeof(s_msg));
+  
+  // Send a message to the DESTINATION!
+  if (rf69_manager.sendtoWait((uint8_t *)s_buff, sizeof(s_buff), DEST_ADDRESS)) {
+    // Now wait for a reply from the server
+    uint8_t len = sizeof(buf);
+    uint8_t from;   
+    /* Send and try to receive from with a 20ms timeout */
+    if (rf69_manager.recvfromAckTimeout(buf, &len, 20, &from)) {
+      buf[len] = 0; // zero out remaining string
+      
+      Serial.print("Got reply from #"); Serial.print(from);
+      Serial.print(" [RSSI :");
+      Serial.print(rf69.lastRssi());
+      Serial.print("] : ");
+      Serial.println((char*)buf);   
+      Serial.print("max message len = ");
+      Serial.println(RH_RF69_MAX_MESSAGE_LEN);  
+      Blink(LED, 1, 3); //blink LED 3 times, 1ms between blinks
+      return 0;
+      
+    } 
+    else 
+    {
+      Serial.println("No reply, is anyone listening?");
+      return 1;
+    }
+  } 
+  else 
+  {
+    Serial.println("Sending failed (no ack)");
+    return 1;
+  }
+  return 1;
 }
 
 void Blink(byte PIN, byte DELAY_MS, byte loops) {

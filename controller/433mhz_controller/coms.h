@@ -136,14 +136,25 @@ uint8_t data[] = "And hello back to you";
 uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
 
 
+int get_mode()
+{
+  return s_msg.mode;
+}
 
 float get_mot_val(int m)
 {
-  if(m == MOT_RIGHT) return s_msg.m_right;
-  if(m == MOT_LEFT)  return s_msg.m_left;
+  if(s_msg.mode == MODE_DIFFERENTIAL_DRIVE)
+  {
+    if(m == MOT_RIGHT) return s_msg.d0;
+    if(m == MOT_LEFT ) return s_msg.d1;
+  }
+  else if(s_msg.mode == MODE_JOYSTICK)
+  {
+    if(m == JOY_X) return s_msg.d0;
+    if(m == JOY_Y) return s_msg.d1;
+  }
   return 0.0;
 }
-
 
 int get_message() {
   if (rf69_manager.available())
@@ -174,11 +185,13 @@ int get_message() {
       //s_msg.mode += 1;
 
       // Send a reply back to the originator client
+      /*
       if (!rf69_manager.sendtoWait(data, sizeof(data), from))
       {
         Serial.println("Sending failed (no ack)");
         return 1;
       }
+      */
       return 0;
     }
   }

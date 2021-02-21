@@ -4,10 +4,9 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
-#define PWM_CHAN_MOT_RIGHT 0
-#define PWM_CHAN_MOT_LEFT 1
-#define MOT_RIGHT PWM_CHAN_MOT_RIGHT
-#define MOT_LEFT PWM_CHAN_MOT_LEFT
+#define PWM_CHAN_MOT_RIGHT 4
+#define PWM_CHAN_MOT_LEFT 3
+
 
 // called this way, it uses the default address 0x40
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
