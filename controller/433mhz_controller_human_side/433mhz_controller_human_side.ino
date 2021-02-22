@@ -23,11 +23,11 @@ void setup()
 void loop() {
   Serial.println("CCW");
   send_message(0.3, -0.3);
-  delay(2000);
+  delay(3000);
   Serial.println("CW");
   send_message(-0.3, 0.3);
-  delay(2000);
+  delay(3000);
   Serial.println("Stop");
   send_message(0.0, 0.0);
-  delay(2000);
+  delay(3000);
 }

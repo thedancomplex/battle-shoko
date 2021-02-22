@@ -111,8 +111,7 @@ void coms_setup()
   pinMode(RFM69_RST, OUTPUT);
   digitalWrite(RFM69_RST, LOW);
 
-  Serial.println("Feather Addressed RFM69 TX Test!");
-  Serial.println();
+  Serial.println("Battle Shoko Controller");
 
   // manual reset
   digitalWrite(RFM69_RST, HIGH);
@@ -150,112 +149,6 @@ void coms_setup()
 uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
 uint8_t data[] = "  OK";
 
-
-void send_working_string()
-{
-    char radiopacket[20] = "Hello World #";
-  itoa(packetnum++, radiopacket+13, 10);
-  Serial.print("Sending "); Serial.println(radiopacket);
-  
-  // Send a message to the DESTINATION!
-  if (rf69_manager.sendtoWait((uint8_t *)radiopacket, strlen(radiopacket), DEST_ADDRESS)) {
-    // Now wait for a reply from the server
-    uint8_t len = sizeof(buf);
-    uint8_t from;   
-    if (rf69_manager.recvfromAckTimeout(buf, &len, 2000, &from)) {
-      buf[len] = 0; // zero out remaining string
-      
-      Serial.print("Got reply from #"); Serial.print(from);
-      Serial.print(" [RSSI :");
-      Serial.print(rf69.lastRssi());
-      Serial.print("] : ");
-      Serial.println((char*)buf);     
-      Blink(LED, 40, 3); //blink LED 3 times, 40ms between blinks
-    } else {
-      Serial.println("No reply, is anyone listening?");
-    }
-  } else {
-    Serial.println("Sending failed (no ack)");
-  }
-}
-
-
-
-void send_working_string2()
-{
-   
-  s_msg.mode+=1;
-
-  char radiopacket[sizeof(s_msg)];
-  memcpy(&radiopacket, &s_msg, sizeof(s_msg));
-
-  
-//  itoa(packetnum++, radiopacket+13, 10);
-  Serial.print("Sending "); Serial.println(radiopacket);
-  
-  // Send a message to the DESTINATION!
-  if (rf69_manager.sendtoWait((uint8_t *)radiopacket, sizeof(radiopacket), DEST_ADDRESS)) {
-    // Now wait for a reply from the server
-    uint8_t len = sizeof(buf);
-    uint8_t from;   
-    if (rf69_manager.recvfromAckTimeout(buf, &len, 2000, &from)) {
-      buf[len] = 0; // zero out remaining string
-      
-      Serial.print("Got reply from #"); Serial.print(from);
-      Serial.print(" [RSSI :");
-      Serial.print(rf69.lastRssi());
-      Serial.print("] : ");
-      Serial.println((char*)buf);     
-      Blink(LED, 40, 3); //blink LED 3 times, 40ms between blinks
-    } else {
-      Serial.println("No reply, is anyone listening?");
-    }
-  } else {
-    Serial.println("Sending failed (no ack)");
-  }
-}
-
-
-void send_message_test(){
-   char radiopacket[20] = "Hello World #";
-  char s_buff[sizeof(s_msg)];
-  //itoa(packetnum++, radiopacket+13, 10);
-  
-
-  memcpy(&s_buff, &s_msg, sizeof(s_msg));
-  s_msg.mode+=1;
-  Serial.print("Sending "); Serial.println(int(s_buff[sizeof(s_msg)-2]));
-  Serial.print("sizeof(s_msg) = "); Serial.println(sizeof(s_msg));
-
-  for(int i = 0; i < sizeof(s_buff); i++)
-  {
-    Serial.print(int(s_buff[i])); Serial.print(" ");
-  }
-  Serial.println();
-  
-  // Send a message to the DESTINATION!
-  if (rf69_manager.sendtoWait((uint8_t *)s_buff, sizeof(s_buff), DEST_ADDRESS)) {
-    // Now wait for a reply from the server
-    uint8_t len = sizeof(buf);
-    uint8_t from;   
-    if (rf69_manager.recvfromAckTimeout(buf, &len, 2000, &from)) {
-      buf[len] = 0; // zero out remaining string
-      
-      Serial.print("Got reply from #"); Serial.print(from);
-      Serial.print(" [RSSI :");
-      Serial.print(rf69.lastRssi());
-      Serial.print("] : ");
-      Serial.println((char*)buf);   
-      Serial.print("max message len = ");
-      Serial.println(RH_RF69_MAX_MESSAGE_LEN);  
-      Blink(LED, 40, 3); //blink LED 3 times, 40ms between blinks
-    } else {
-      Serial.println("No reply, is anyone listening?");
-    }
-  } else {
-    Serial.println("Sending failed (no ack)");
-  }
-}
 
 
 int set_message_mode(int m)
@@ -323,6 +216,11 @@ int send_message(int m, float d0, float d1)
   return send_message();
 }
 
+int coms_led_blink()
+{
+  digitalWrite(LED, !digitalRead(LED));
+  return 0;
+}
 
 int send_message() {
   
@@ -336,10 +234,22 @@ int send_message() {
     // Now wait for a reply from the server
     uint8_t len = sizeof(buf);
     uint8_t from;   
-    /* Send and try to receive from with a 20ms timeout */
-    if (rf69_manager.recvfromAckTimeout(buf, &len, 20, &from)) {
+    /* Send and try to receive from with a 10ms timeout */
+    if (rf69_manager.recvfromAckTimeout(buf, &len, 10, &from)) {
       buf[len] = 0; // zero out remaining string
+      coms_led_blink();
       
+      if(buf[0] == MSG_OK)
+      {
+        Serial.println("MSG_OK");
+        return 0;
+      }
+      else
+      {
+        Serial.println("MSG_ERR");
+        return 1;
+      }
+      /*
       Serial.print("Got reply from #"); Serial.print(from);
       Serial.print(" [RSSI :");
       Serial.print(rf69.lastRssi());
@@ -347,19 +257,23 @@ int send_message() {
       Serial.println((char*)buf);   
       Serial.print("max message len = ");
       Serial.println(RH_RF69_MAX_MESSAGE_LEN);  
-      Blink(LED, 1, 3); //blink LED 3 times, 1ms between blinks
+      */
+      
+      // Blink(LED, 1, 3); //blink LED 3 times, 1ms between blinks
+
+      
       return 0;
       
     } 
     else 
     {
-      Serial.println("No reply, is anyone listening?");
+      Serial.println("MSG_NO_REPLY");
       return 1;
     }
   } 
   else 
   {
-    Serial.println("Sending failed (no ack)");
+    Serial.println("MSG_NO_ACK");
     return 1;
   }
   return 1;

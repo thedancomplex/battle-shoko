@@ -1,5 +1,8 @@
 #define MESSAGE_H 1
 
+#define MSG_OK 0
+#define MSG_ERR 1
+
 #define MOT_RIGHT 0
 #define MOT_LEFT 1
 

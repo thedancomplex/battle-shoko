@@ -64,7 +64,6 @@
   #define LED           13
 #endif
 
-
 // Singleton instance of the radio driver
 RH_RF69 rf69(RFM69_CS, RFM69_INT);
 
@@ -156,6 +155,12 @@ float get_mot_val(int m)
   return 0.0;
 }
 
+int coms_led_blink()
+{
+  digitalWrite(LED, !digitalRead(LED));
+  return 0;
+}
+
 int get_message() {
   if (rf69_manager.available())
   {
@@ -164,34 +169,42 @@ int get_message() {
     uint8_t from;
     if (rf69_manager.recvfromAck(buf, &len, &from)) {
       buf[len] = 0; // zero out remaining string
-      
+      /*
       Serial.print("Got packet from #"); Serial.print(from);
       Serial.print(" [RSSI :");
       Serial.print(rf69.lastRssi());
       Serial.print("] : ");
       Serial.println((char*)buf);
-      Blink(LED, 40, 3); //blink LED 3 times, 40ms between blinks
+      */
       
+      //Blink(LED, 1, 3); //blink LED 3 times, 1 between blinks
 
+      /* Invert LED when ever a message is received */
+      coms_led_blink();
+      
+      /* Copy buffer to s_msg */
       memcpy( &s_msg,   &buf, sizeof(s_msg));
+
+      /*
       Serial.print("buff = "); Serial.println(int(buf[sizeof(s_msg)-2]));
       Serial.print("buff = "); Serial.println(s_msg.mode);
+      */
+      
       for(int i = 0; i < sizeof(s_msg); i++)
       {
         Serial.print(int(buf[i])); Serial.print(" ");
       }
       Serial.println();
-      
-      //s_msg.mode += 1;
 
+      
       // Send a reply back to the originator client
-      /*
+      uint8_t data[] = {MSG_OK};
       if (!rf69_manager.sendtoWait(data, sizeof(data), from))
       {
+         
         Serial.println("Sending failed (no ack)");
         return 1;
-      }
-      */
+      }      
       return 0;
     }
   }

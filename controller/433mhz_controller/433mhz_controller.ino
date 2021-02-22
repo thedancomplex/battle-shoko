@@ -24,6 +24,7 @@ void setup()
   //while (!Serial) { delay(1); } // wait until serial console is open, remove if not tethered to computer
   coms_setup();
   pwm_setup();
+  safety_setup();
   //soft_start();
 }
 
@@ -70,20 +71,11 @@ void loop() {
   if( get_message() == 0)
   {
     /* Received Mesage */
-    safety_message_received();
-    Serial.print("D0 and D1 = ");
-    Serial.print(s_msg.d0);
-    Serial.print(" ");
-    Serial.print(s_msg.d1);
-    Serial.println();
+    safety_timer_ms_reset();
     if(get_mode() == MODE_DIFFERENTIAL_DRIVE) do_diff_drive();
     if(get_mode() == MODE_JOYSTICK          ) do_joystick();
-    Serial.print("ic = ");
-    Serial.println(ic);
-    ic = 0;
   }
-  ic +=1;
-  
+
   /* Safety Timer */
-  //safety_timer();
+  safety_timer_ms();
 }
