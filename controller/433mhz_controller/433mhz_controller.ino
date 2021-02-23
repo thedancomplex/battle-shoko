@@ -47,9 +47,7 @@ int do_diff_drive()
   Serial.println("Do Diff Drive");
   int ret = 0;
   ret += set_mot(PWM_CHAN_MOT_LEFT,  get_mot_val(MOT_LEFT));
-  Serial.println(1);
   ret += set_mot(PWM_CHAN_MOT_RIGHT, get_mot_val(MOT_RIGHT));
-  Serial.println(2);
   if (ret >=1) ret = 1;
   return ret;
 }
@@ -60,14 +58,15 @@ int do_joystick()
   float y = get_mot_val(JOY_Y);
   if( xy_to_joy(x,y) ) return 1;
   int ret = 0;
-  ret += set_mot(MOT_LEFT,  get_mot_val_joy(MOT_LEFT));
-  ret += set_mot(MOT_RIGHT, get_mot_val_joy(MOT_RIGHT));
+  ret += set_mot(PWM_CHAN_MOT_LEFT,  get_mot_val_joy(MOT_LEFT));
+  ret += set_mot(PWM_CHAN_MOT_RIGHT, get_mot_val_joy(MOT_RIGHT));
   if(ret >= 1) ret = 1;
   return ret;
 }
 
-int ic = 0;
+
 void loop() {
+ 
   if( get_message() == 0)
   {
     /* Received Mesage */

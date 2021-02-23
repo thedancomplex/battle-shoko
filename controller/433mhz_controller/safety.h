@@ -29,8 +29,8 @@ int safety_message_received()
 int safety_do_stop()
 {
   int ret = 0;
-  ret += set_mot(MOT_LEFT,  0.0);
-  ret += set_mot(MOT_RIGHT, 0.0);
+  ret += set_mot(PWM_CHAN_MOT_RIGHT,  0.0);
+  ret += set_mot(PWM_CHAN_MOT_LEFT ,  0.0);
   if(ret > 0) return 1;
   return 0;
 }
@@ -48,10 +48,12 @@ int safety_timer_ms_reset()
   return 0;
 }
 
+unsigned long safety_ic = 0;
 int safety_timer_ms()
 {
   unsigned long t1 = millis();
-  if( (t1 - safety_t0) > safety_dt)
+  unsigned long dt = t1 - safety_t0;
+  if( dt > safety_dt)
   {
     safety_do_stop();
     return 1;

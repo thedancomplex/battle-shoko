@@ -16,22 +16,26 @@
   #include "arc.h"
 #endif
 
+#if !defined(TEST_H)
+  #include "test.h"
+#endif
+
 void setup() 
 {
   Serial.begin(115200);
   //while (!Serial) { delay(1); } // wait until serial console is open, remove if not tethered to computer
 
   coms_setup();
+  arc_setup();
 }
 
-void loop() {
-  Serial.println("CCW");
-  send_message(0.3, -0.3);
-  delay(3000);
-  Serial.println("CW");
-  send_message(-0.3, 0.3);
-  delay(3000);
-  Serial.println("Stop");
-  send_message(0.0, 0.0);
-  delay(3000);
+
+
+
+
+
+
+void loop() 
+{
+  test2();
 }

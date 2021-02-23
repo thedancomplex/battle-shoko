@@ -21,13 +21,23 @@ typedef struct arc_joy {
 
 
 arc_joy_t arc;
+arc_joy_t arc_robot;
 
 int arc_setup()
 {
   memset(&arc, 0, sizeof(arc));
+  memset(&arc_robot, 0, sizeof(arc_robot));
   return 0;
 }
 
+int arc_2_robot()
+{
+  arc_robot.right.x = arc.right.y;
+  arc_robot.left.x  = arc.left.y;
+  arc_robot.right.y = arc.right.x;
+  arc_robot.left.y  = arc.left.x;
+  return 0;
+}
 
 String getValue(String data, char separator, int index)
 {
@@ -49,11 +59,12 @@ String getValue(String data, char separator, int index)
 
 
 
-int doStringDecode(String s){
+int arc_rx_decode(String s){
   int len = s.length();
   int n = len + 1;
   char packetBuffer[n]; //buffer to hold incoming packet,
-  packetBuffer[n-1] = 0;
+  //memset(packetBuffer, 0, sizeof(packetBuffer));
+  s.toCharArray(packetBuffer, n);
   String v0 = getValue(packetBuffer, ' ', 0);
   if(v0 == "joy"){
       String v1 = getValue(packetBuffer, ' ', 1);
@@ -64,6 +75,7 @@ int doStringDecode(String s){
 
         String d3 = getValue(packetBuffer, ' ', 3);
         arc.right.y = d3.toDouble();
+        arc_2_robot();
         return ARC_JOY_RIGHT;
       }
       if(v1 == "left"){
@@ -72,6 +84,7 @@ int doStringDecode(String s){
 
         String d3 = getValue(packetBuffer, ' ', 3);
         arc.left.y = d3.toDouble();
+        arc_2_robot();
         return ARC_JOY_LEFT;
       }
   }
