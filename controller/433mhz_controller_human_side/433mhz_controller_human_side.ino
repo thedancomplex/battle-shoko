@@ -37,5 +37,5 @@ void setup()
 
 void loop() 
 {
-  test2();
+  test3();
 }
