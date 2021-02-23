@@ -12,6 +12,10 @@
   #include "coms.h"
 #endif
 
+#if !defined(ARC_H)
+  #include "arc.h"
+#endif
+
 void setup() 
 {
   Serial.begin(115200);
