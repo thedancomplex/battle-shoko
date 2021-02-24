@@ -7,6 +7,22 @@ String arc_test_string_stop = "joy right 0.0 0.0";
 String arc_test_string_fwd  = "joy right 0.0 0.3";
 String arc_test_string_bkw  = "joy right -0.0 -0.3";
 
+int test6()
+{
+  joystick_button_run();
+  delay(50);
+  return 0;
+}
+
+int test4()
+{
+  if(coms_serial_read()== 0)
+  {
+    send_message(MODE_JOYSTICK, arc_robot.right.x, arc_robot.right.y);
+  }
+  return 0;
+}
+
 
 int test3()
 {

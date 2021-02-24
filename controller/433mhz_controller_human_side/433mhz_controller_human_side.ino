@@ -16,15 +16,26 @@
   #include "arc.h"
 #endif
 
+#if !defined(COMS_SERIAL_H)
+  #include "coms_serial.h"
+#endif
+
+#if !defined(JOYSTICK_BUTTON_H)
+  #include "joystick_button.h"
+#endif
+
 #if !defined(TEST_H)
   #include "test.h"
 #endif
+
+
+
 
 void setup() 
 {
   Serial.begin(115200);
   //while (!Serial) { delay(1); } // wait until serial console is open, remove if not tethered to computer
-
+  joystick_button_setup();
   coms_setup();
   arc_setup();
 }
@@ -37,5 +48,5 @@ void setup()
 
 void loop() 
 {
-  test3();
+  test6();
 }
