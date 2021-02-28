@@ -24,6 +24,16 @@
   #include "joystick_button.h"
 #endif
 
+/*
+#if !defined(SBUS_RELAY_H)
+  #include "sbus_relay.h"
+#endif
+*/
+
+#if !defined(RC_READ_H)
+  #include "rc_read.h"
+#endif
+
 #if !defined(TEST_H)
   #include "test.h"
 #endif
@@ -38,6 +48,8 @@ void setup()
   joystick_button_setup();
   coms_setup();
   arc_setup();
+  rc_read_setup();
+  //sbus_relay_setup();
 }
 
 
@@ -48,5 +60,5 @@ void setup()
 
 void loop() 
 {
-  test6();
+  test8();
 }

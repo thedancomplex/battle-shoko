@@ -7,6 +7,41 @@ String arc_test_string_stop = "joy right 0.0 0.0";
 String arc_test_string_fwd  = "joy right 0.0 0.3";
 String arc_test_string_bkw  = "joy right -0.0 -0.3";
 
+
+
+int test8()
+{
+  rc_read_update();
+  float x = rc_joy.right.x;
+  float y = rc_joy.right.y;
+  float MinMax = 0.3;
+  if(x >  MinMax) x =  MinMax;
+  if(x < -MinMax) x = -MinMax;
+  if(y >  MinMax) y =  MinMax;
+  if(y < -MinMax) y = -MinMax;
+  send_message(MODE_JOYSTICK, y, x);
+  Serial.print(rc_joy.right.x);
+  Serial.print(" ");
+  Serial.print(rc_joy.right.y);
+  Serial.print(" ");
+  Serial.print(x);
+  Serial.print(" ");
+  Serial.print(y);
+  Serial.println();
+  return 0;
+}
+
+
+int test7()
+{
+  rc_read_update();
+  Serial.print(rc_joy.right.x);
+  Serial.print(" ");
+  Serial.print(rc_joy.right.y);
+  Serial.println();
+  return 0;
+}
+
 int test6()
 {
   joystick_button_run();
